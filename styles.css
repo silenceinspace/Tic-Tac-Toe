@@ -1,0 +1,36 @@
+/* * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  min-height: 100vh;
+}
+
+.gameboard {
+  border: 5px solid grey;
+  width: 360px;
+  height: 360px;
+  background-color: goldenrod;
+
+  display: grid;
+  grid-template-columns: repeat(3, 110px);
+  grid-template-rows: repeat(3, 110px);
+  gap: 10px;
+}
+
+.gameboard > div {
+  width: 110px;
+  height: 110px;
+  background-color: skyblue;
+}
+
+.cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 3rem;
+  font-weight: bold;
+} */
