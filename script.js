@@ -20,16 +20,17 @@ const gameBoard = (function () {
 
 // what makes the game progress
 const displayController = (function () {
-  const createPlayer = (name, token) => {
-    return { name, token };
+  const createPlayer = (name, token, moves) => {
+    return { name, token, moves };
   };
 
   const players = [
-    createPlayer("firstPlayer", "X"),
-    createPlayer("secondPlayer", "O"),
+    createPlayer("firstPlayer", "X", []),
+    createPlayer("secondPlayer", "O", []),
   ];
 
   let activePlayer = players[0];
+  const board = gameBoard.getBoard();
 
   const printMove = function () {
     console.log(`It is ${activePlayer.name}'s turn`);
@@ -43,33 +44,65 @@ const displayController = (function () {
 
   const getActivePlayer = () => activePlayer;
 
-  const checkForWin = (row) => {
-    // win conditions
-    const rowWin = ["X", "X", "X"];
+  // hardcore the winning combinations
+  const checkForWin = (playerMoves) => {
+    const rowCombinations = [
+      [1, 2, 3],
+      [4, 5, 6],
+      [7, 8, 9],
+    ];
 
-    if (row.toString() === rowWin.toString()) {
-      console.log(`${getActivePlayer().name} won`);
-      return true;
+    const columnCombinations = [
+      [1, 4, 7],
+      [2, 5, 8],
+      [3, 6, 9],
+    ];
+
+    // potentially filter and compare only three
+    // every() + filter()
+    let madeMoves = playerMoves.join("");
+    let rowWin = rowCombinations.map((array) => array.join(""));
+    let columnWin = columnCombinations.map((array) => array.join(""));
+
+    for (let i = 0; i < 3; i++) {
+      if (rowWin[i] === madeMoves) {
+        console.log(
+          `${getActivePlayer().name} won with row combination ${
+            getActivePlayer().moves
+          }`
+        );
+        console.log(gameBoard.getBoard());
+        return true;
+      } else if (columnWin[i] === madeMoves) {
+        console.log(
+          `${getActivePlayer().name} won with column combination ${
+            getActivePlayer().moves
+          }`
+        );
+        console.log(gameBoard.getBoard());
+        return true;
+      }
     }
   };
 
+  // use makeMove() in the console to play a round
   const usedCells = [];
   const makeMove = function (cell) {
-    usedCells.forEach((cellNum) => {
-      if (cellNum === cell) {
+    usedCells.forEach((usedCell) => {
+      if (usedCell === cell) {
         console.log("This cell was taken already...");
+        console.log("Make a move one more time.");
       }
     });
 
-    gameBoard.getBoard().forEach((array) => {
-      for (let i = 0; i < 3; i++) {
-        if (array[i] === cell) {
-          array[i] = getActivePlayer().token;
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        if (cell === board[i][j]) {
           usedCells.push(cell);
-          console.log(`${usedCells} was used`);
+          getActivePlayer().moves.push(cell);
+          board[i][j] = getActivePlayer().token;
 
-          //if there are 3 x's in a row, then it is a win
-          if (checkForWin(array)) {
+          if (checkForWin(getActivePlayer().moves)) {
             return;
           } else {
             switchPlayer();
@@ -77,13 +110,33 @@ const displayController = (function () {
           }
         }
       }
-    });
+    }
   };
 
   printMove();
 
   return { makeMove, getActivePlayer };
 })();
+
+//   gameBoard.getBoard().forEach((array) => {
+//     for (let i = 0; i < 3; i++) {
+//       if (array[i] === cell) {
+//         console.log(array[i]);
+//         array[i] = getActivePlayer().token;
+//         usedCells.push(cell);
+//         console.log(`${usedCells} was used`);
+
+//         //if there are 3 x's in a givenRow, then it is a win
+//         if (checkForWin(array)) {
+//           return;
+//         } else {
+//           switchPlayer();
+//           printMove();
+//         }
+//       }
+//     }
+// });
+// };
 
 // // function to rended 'x's and 'o'x to the cells
 // const renderGameboard = (function () {
