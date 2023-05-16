@@ -30,7 +30,7 @@ const displayController = (function () {
   ];
 
   let activePlayer = players[0];
-  const board = gameBoard.getBoard();
+  let board = gameBoard.getBoard();
 
   const printMove = function () {
     console.log(`It is ${activePlayer.name}'s turn`);
@@ -45,49 +45,75 @@ const displayController = (function () {
   const getActivePlayer = () => activePlayer;
 
   // hardcore the winning combinations
-  const checkForWin = (playerMoves) => {
-    const rowCombinations = [
+  const checkForWin = () => {
+    const winningCombinations = [
       [1, 2, 3],
       [4, 5, 6],
       [7, 8, 9],
-    ];
-
-    const columnCombinations = [
       [1, 4, 7],
       [2, 5, 8],
       [3, 6, 9],
+      [1, 5, 9],
+      [3, 5, 7],
     ];
 
-    // potentially filter and compare only three
-    // every() + filter()
-    let madeMoves = playerMoves.join("");
-    let rowWin = rowCombinations.map((array) => array.join(""));
-    let columnWin = columnCombinations.map((array) => array.join(""));
+    const madeMoves = getActivePlayer().moves;
 
-    for (let i = 0; i < 3; i++) {
-      if (rowWin[i] === madeMoves) {
+    for (let i = 0; i < winningCombinations.length; i++) {
+      const result = [];
+      for (let j = 0; j < 3; j++) {
+        for (let k = 0; k < madeMoves.length; k++) {
+          if (winningCombinations[i][j] === madeMoves[k]) {
+            result.push(madeMoves[k]);
+          }
+        }
+      }
+
+      if (result.length === 3) {
         console.log(
-          `${getActivePlayer().name} won with row combination ${
-            getActivePlayer().moves
-          }`
+          `${getActivePlayer().name} won with combination ${result.sort()}`
         );
         console.log(gameBoard.getBoard());
-        return true;
-      } else if (columnWin[i] === madeMoves) {
-        console.log(
-          `${getActivePlayer().name} won with column combination ${
-            getActivePlayer().moves
-          }`
-        );
-        console.log(gameBoard.getBoard());
+        winner = true;
         return true;
       }
     }
   };
 
-  // use makeMove() in the console to play a round
-  const usedCells = [];
+  // if all cells are occupied but there is no winner, then it is a tie
+  const registerTie = () => {
+    if (usedCells.length === 9 && winner !== true) {
+      console.log("It is a tie");
+      return true;
+    }
+  };
+
+  // clear all data for a new game
+  const startNewGame = () => {
+    let playerResponse = confirm("Would you like to start a new game?");
+
+    if (playerResponse) {
+      console.log("Starting a new game...");
+      winner = false;
+      players[0].moves = [];
+      players[1].moves = [];
+
+    } else {
+      console.log("Alright, never mind...");
+    }
+  };
+
+  // use displayController.makeMove() in the console to play a round
+  let winner = false;
+  let usedCells = [];
   const makeMove = function (cell) {
+    if (winner) {
+      console.log("You cannot make any moves. The game is over.");
+      return;
+    }
+
+    // replace this for each with for loops?
+    // here I make sure that if there's someone's token in the cell, then the cell cannot be used anymore
     usedCells.forEach((usedCell) => {
       if (usedCell === cell) {
         console.log("This cell was taken already...");
@@ -102,7 +128,9 @@ const displayController = (function () {
           getActivePlayer().moves.push(cell);
           board[i][j] = getActivePlayer().token;
 
-          if (checkForWin(getActivePlayer().moves)) {
+          if (checkForWin()) {
+            return;
+          } else if (registerTie()) {
             return;
           } else {
             switchPlayer();
@@ -113,47 +141,8 @@ const displayController = (function () {
     }
   };
 
+  // initial message
   printMove();
 
-  return { makeMove, getActivePlayer };
+  return { makeMove, getActivePlayer, startNewGame };
 })();
-
-//   gameBoard.getBoard().forEach((array) => {
-//     for (let i = 0; i < 3; i++) {
-//       if (array[i] === cell) {
-//         console.log(array[i]);
-//         array[i] = getActivePlayer().token;
-//         usedCells.push(cell);
-//         console.log(`${usedCells} was used`);
-
-//         //if there are 3 x's in a givenRow, then it is a win
-//         if (checkForWin(array)) {
-//           return;
-//         } else {
-//           switchPlayer();
-//           printMove();
-//         }
-//       }
-//     }
-// });
-// };
-
-// // function to rended 'x's and 'o'x to the cells
-// const renderGameboard = (function () {
-//   const cells = document.querySelectorAll(".cell");
-//   // let num = 0;
-//   cells.forEach((cell) => {
-//     // cell.textContent = gameBoard.gameBoard[num];
-//     // num++;
-
-//     cell.addEventListener("click", leaveMark);
-//   });
-
-//   function leaveMark() {
-//     if (this.textContent === "") {
-//       this.textContent = "X";
-//     } else {
-//       console.log("the spot is taken");
-//     }
-//   }
-// })();
