@@ -34,12 +34,12 @@ const displayController = (function () {
 
   const printMove = function () {
     console.log(`It is ${activePlayer.name}'s turn`);
-    console.log(gameBoard.getBoard());
+    console.log(board);
   };
 
   const switchPlayer = function () {
     activePlayer = activePlayer === players[0] ? players[1] : players[0];
-    console.log(`Player was switched - new player is ${activePlayer.name}`);
+    console.log(`Player was switched. New player is ${activePlayer.name}`);
   };
 
   const getActivePlayer = () => activePlayer;
@@ -73,7 +73,7 @@ const displayController = (function () {
         console.log(
           `${getActivePlayer().name} won with combination ${result.sort()}`
         );
-        console.log(gameBoard.getBoard());
+        console.log(board);
         winner = true;
         return true;
       }
@@ -92,12 +92,24 @@ const displayController = (function () {
   const startNewGame = () => {
     let playerResponse = confirm("Would you like to start a new game?");
 
+    function resetBoard() {
+      board = [
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9],
+      ];
+      return board;
+    }
+
     if (playerResponse) {
       console.log("Starting a new game...");
       winner = false;
       players[0].moves = [];
       players[1].moves = [];
-
+      usedCells = [];
+      activePlayer = players[0];
+      board = resetBoard();
+      printMove();
     } else {
       console.log("Alright, never mind...");
     }
@@ -112,7 +124,6 @@ const displayController = (function () {
       return;
     }
 
-    // replace this for each with for loops?
     // here I make sure that if there's someone's token in the cell, then the cell cannot be used anymore
     usedCells.forEach((usedCell) => {
       if (usedCell === cell) {
@@ -127,6 +138,7 @@ const displayController = (function () {
           usedCells.push(cell);
           getActivePlayer().moves.push(cell);
           board[i][j] = getActivePlayer().token;
+          console.log(usedCells);
 
           if (checkForWin()) {
             return;
