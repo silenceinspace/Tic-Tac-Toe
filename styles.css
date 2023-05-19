@@ -1,4 +1,9 @@
-/* * {
+@font-face {
+  font-family: roboto;
+  src: url(./fonts/Roboto/Roboto-Light.ttf);
+}
+
+* {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -6,6 +11,28 @@
 
 html {
   min-height: 100vh;
+  font-family: "roboto", sans-serif;
+}
+
+.container {
+  height: 100vh;
+  display: grid;
+  grid-template-rows: 1fr 50px;
+  background-color: darkolivegreen;
+}
+
+.main-section {
+  margin: auto;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 10px;
+
+  font-size: 3rem;
+  font-weight: bold;
+  font-style: italic;
+  color: white;
 }
 
 .gameboard {
@@ -20,7 +47,7 @@ html {
   gap: 10px;
 }
 
-.gameboard > div {
+.gameboard > .cell {
   width: 110px;
   height: 110px;
   background-color: skyblue;
@@ -33,4 +60,29 @@ html {
 
   font-size: 3rem;
   font-weight: bold;
-} */
+
+  border: none;
+}
+
+.cell:hover {
+  cursor: pointer;
+}
+
+#footer {
+  background-color: black;
+}
+
+#footer a {
+  color: white;
+  text-decoration: none;
+}
+
+#footer a:hover {
+  text-decoration: underline;
+  color: red;
+}
+
+#footer > p {
+  text-align: center;
+  padding: 15px;
+}
