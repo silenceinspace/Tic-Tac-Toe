@@ -102,16 +102,17 @@ const displayController = (function () {
     }
 
     if (playerResponse) {
-      console.log("Starting a new game...");
+      // invisible changes
       winner = false;
       players[0].moves = [];
       players[1].moves = [];
       usedCells = [];
       activePlayer = players[0];
       board = resetBoard();
+      // visible changes
+      const cells = document.querySelectorAll(".cell");
+      cells.forEach((cell) => (cell.textContent = ""));
       printMove();
-    } else {
-      console.log("Alright, never mind...");
     }
   };
 
@@ -202,7 +203,15 @@ const renderPlayersNames = (function () {
       console.log("Default name was set");
       const defaultName = "Player Two";
       playerObjects[1].name = defaultName;
-      namePlayerOne.textContent = defaultName;
+      namePlayerTwo.textContent = defaultName;
     }
+  });
+})();
+
+// Start a new game
+const restartGame = (function () {
+  const restartBtn = document.querySelector(".restart-game");
+  restartBtn.addEventListener("click", () => {
+    displayController.startNewGame();
   });
 })();

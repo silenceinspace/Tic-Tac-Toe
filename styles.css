@@ -35,6 +35,28 @@ h1 {
   color: white;
 }
 
+.restart-game {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+.restart-game > button {
+  height: 40px;
+  width: 150px;
+  font-size: 1.5rem;
+  border: none;
+  background-color: palevioletred;
+  border-radius: 10px;
+}
+
+.restart-game > button:hover {
+  cursor: pointer;
+  color: white;
+  text-decoration: underline;
+}
+
 .player-names {
   font-size: 2rem;
   font-weight: bold;
