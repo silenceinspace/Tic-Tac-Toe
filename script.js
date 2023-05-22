@@ -39,7 +39,7 @@ const displayController = (function () {
 
   const switchPlayer = function () {
     activePlayer = activePlayer === players[0] ? players[1] : players[0];
-    console.log(`Player was switched. New player is ${activePlayer.name}`);
+    indicateTurn.toggleTurnColor(getActivePlayer());
   };
 
   const getActivePlayer = () => activePlayer;
@@ -70,10 +70,9 @@ const displayController = (function () {
       }
 
       if (result.length === 3) {
-        console.log(
+        alert(
           `${getActivePlayer().name} won with combination ${result.sort()}`
         );
-        console.log(board);
         winner = true;
         return true;
       }
@@ -83,7 +82,7 @@ const displayController = (function () {
   // if all cells are occupied but there is no winner, then it is a tie
   const registerTie = () => {
     if (usedCells.length === 9 && winner !== true) {
-      console.log("It is a tie");
+      alert("It is a tie");
       return true;
     }
   };
@@ -112,6 +111,7 @@ const displayController = (function () {
       // visible changes
       const cells = document.querySelectorAll(".cell");
       cells.forEach((cell) => (cell.textContent = ""));
+      indicateTurn.toggleTurnColor(activePlayer);
       printMove();
     }
   };
@@ -188,9 +188,15 @@ const renderPlayersNames = (function () {
   namePlayerOne.addEventListener("blur", () => {
     playerObjects[0].name = namePlayerOne.textContent;
 
+    const defaultName = "Player One";
     if (namePlayerOne.textContent === "") {
       console.log("Default name was set");
-      const defaultName = "Player One";
+      playerObjects[0].name = defaultName;
+      namePlayerOne.textContent = defaultName;
+    }
+
+    if (namePlayerOne.textContent === namePlayerTwo.textContent) {
+      console.log("You cannot have the same name");
       playerObjects[0].name = defaultName;
       namePlayerOne.textContent = defaultName;
     }
@@ -198,10 +204,16 @@ const renderPlayersNames = (function () {
 
   namePlayerTwo.addEventListener("blur", () => {
     playerObjects[1].name = namePlayerTwo.textContent;
+    const defaultName = "Player Two";
 
     if (namePlayerTwo.textContent === "") {
       console.log("Default name was set");
-      const defaultName = "Player Two";
+      playerObjects[1].name = defaultName;
+      namePlayerTwo.textContent = defaultName;
+    }
+
+    if (namePlayerOne.textContent === namePlayerTwo.textContent) {
+      console.log("You cannot have the same name");
       playerObjects[1].name = defaultName;
       namePlayerTwo.textContent = defaultName;
     }
@@ -214,4 +226,20 @@ const restartGame = (function () {
   restartBtn.addEventListener("click", () => {
     displayController.startNewGame();
   });
+})();
+
+const indicateTurn = (function () {
+  const toggleTurnColor = (turn) => {
+    if (turn.token === "X") {
+      document.querySelector(".player-one").style.backgroundColor = "orange";
+      document.querySelector(".player-two").style.backgroundColor = "white";
+    } else {
+      document.querySelector(".player-two").style.backgroundColor = "orange";
+      document.querySelector(".player-one").style.backgroundColor = "white";
+    }
+  };
+
+  toggleTurnColor(displayController.getActivePlayer());
+
+  return { toggleTurnColor };
 })();
