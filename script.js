@@ -118,7 +118,7 @@ const displayController = (function () {
   // use displayController.makeMove() in the console to play a round
   let winner = false;
   let usedCells = [];
-  const makeMove = function (cell) {
+  const makeMove = function (cell, mark) {
     if (winner) {
       console.log("You cannot make any moves. The game is over.");
       return;
@@ -128,7 +128,6 @@ const displayController = (function () {
     usedCells.forEach((usedCell) => {
       if (usedCell === cell) {
         console.log("This cell was taken already...");
-        console.log("Make a move one more time.");
       }
     });
 
@@ -138,7 +137,7 @@ const displayController = (function () {
           usedCells.push(cell);
           getActivePlayer().moves.push(cell);
           board[i][j] = getActivePlayer().token;
-          console.log(usedCells);
+          mark.textContent = getActivePlayer().token;
 
           if (checkForWin()) {
             return;
@@ -157,4 +156,21 @@ const displayController = (function () {
   printMove();
 
   return { makeMove, getActivePlayer, startNewGame };
+})();
+
+// Work with DOM
+const renderBoard = (function () {
+  const cells = document.querySelectorAll(".cell");
+
+  const addMark = (e) => {
+    // a value inside a data attribute is of string type
+    const specificBtn = e.target;
+    const cellIndex = specificBtn
+      .closest("[data-index]")
+      .getAttributeNode("data-index").value;
+
+    displayController.makeMove(cellIndex * 1, specificBtn);
+  };
+
+  cells.forEach((cell) => cell.addEventListener("click", addMark));
 })();
