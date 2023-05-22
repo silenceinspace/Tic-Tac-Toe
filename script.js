@@ -25,8 +25,8 @@ const displayController = (function () {
   };
 
   const players = [
-    createPlayer("firstPlayer", "X", []),
-    createPlayer("secondPlayer", "O", []),
+    createPlayer("Player One", "X", []),
+    createPlayer("Player Two", "O", []),
   ];
 
   let activePlayer = players[0];
@@ -155,13 +155,11 @@ const displayController = (function () {
   // initial message
   printMove();
 
-  return { makeMove, getActivePlayer, startNewGame };
+  return { makeMove, getActivePlayer, startNewGame, players };
 })();
 
 // Work with DOM
 const renderBoard = (function () {
-  const cells = document.querySelectorAll(".cell");
-
   const addMark = (e) => {
     // a value inside a data attribute is of string type
     const specificBtn = e.target;
@@ -172,5 +170,39 @@ const renderBoard = (function () {
     displayController.makeMove(cellIndex * 1, specificBtn);
   };
 
+  const cells = document.querySelectorAll(".cell");
   cells.forEach((cell) => cell.addEventListener("click", addMark));
+})();
+
+// Edit player names
+const renderPlayersNames = (function () {
+  const playerObjects = displayController.players;
+
+  const namePlayerOne = document.querySelector(".player-one");
+  namePlayerOne.textContent = playerObjects[0].name;
+
+  const namePlayerTwo = document.querySelector(".player-two");
+  namePlayerTwo.textContent = playerObjects[1].name;
+
+  namePlayerOne.addEventListener("blur", () => {
+    playerObjects[0].name = namePlayerOne.textContent;
+
+    if (namePlayerOne.textContent === "") {
+      console.log("Default name was set");
+      const defaultName = "Player One";
+      playerObjects[0].name = defaultName;
+      namePlayerOne.textContent = defaultName;
+    }
+  });
+
+  namePlayerTwo.addEventListener("blur", () => {
+    playerObjects[1].name = namePlayerTwo.textContent;
+
+    if (namePlayerTwo.textContent === "") {
+      console.log("Default name was set");
+      const defaultName = "Player Two";
+      playerObjects[1].name = defaultName;
+      namePlayerOne.textContent = defaultName;
+    }
+  });
 })();

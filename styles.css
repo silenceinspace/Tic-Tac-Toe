@@ -35,6 +35,29 @@ h1 {
   color: white;
 }
 
+.player-names {
+  font-size: 2rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.player-names > span:nth-child(2) {
+  color: white;
+}
+
+.player-names > span:nth-child(odd) {
+  min-width: 100px;
+  background-color: white;
+  padding: 5px;
+}
+
+.player-names > span:focus {
+  outline: none;
+  font-style: italic;
+  border: 3px solid red;
+}
+
 .gameboard {
   border: 5px solid grey;
   width: 360px;
@@ -66,6 +89,7 @@ h1 {
 
 .cell:hover {
   cursor: pointer;
+  background-color: rgb(92, 132, 148);
 }
 
 #footer {
