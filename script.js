@@ -190,13 +190,13 @@ const renderPlayersNames = (function () {
 
     const defaultName = "Player One";
     if (namePlayerOne.textContent === "") {
-      console.log("Default name was set");
+      alert("Default name was set");
       playerObjects[0].name = defaultName;
       namePlayerOne.textContent = defaultName;
     }
 
     if (namePlayerOne.textContent === namePlayerTwo.textContent) {
-      console.log("You cannot have the same name");
+      alert("You cannot have the same name");
       playerObjects[0].name = defaultName;
       namePlayerOne.textContent = defaultName;
     }
@@ -207,13 +207,13 @@ const renderPlayersNames = (function () {
     const defaultName = "Player Two";
 
     if (namePlayerTwo.textContent === "") {
-      console.log("Default name was set");
+      alert("Default name was set");
       playerObjects[1].name = defaultName;
       namePlayerTwo.textContent = defaultName;
     }
 
     if (namePlayerOne.textContent === namePlayerTwo.textContent) {
-      console.log("You cannot have the same name");
+      alert("You cannot have the same name");
       playerObjects[1].name = defaultName;
       namePlayerTwo.textContent = defaultName;
     }
