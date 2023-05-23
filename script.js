@@ -70,8 +70,9 @@ const displayController = (function () {
       }
 
       if (result.length === 3) {
-        alert(
-          `${getActivePlayer().name} won with combination ${result.sort()}`
+        congratulateWinner.displayMessage(
+          getActivePlayer().name,
+          result.sort()
         );
         winner = true;
         return true;
@@ -82,7 +83,7 @@ const displayController = (function () {
   // if all cells are occupied but there is no winner, then it is a tie
   const registerTie = () => {
     if (usedCells.length === 9 && winner !== true) {
-      alert("It is a tie");
+      congratulateWinner.displayMessage();
       return true;
     }
   };
@@ -121,14 +122,14 @@ const displayController = (function () {
   let usedCells = [];
   const makeMove = function (cell, mark) {
     if (winner) {
-      console.log("You cannot make any moves. The game is over.");
+      alert("Game is over. Start a new game.");
       return;
     }
 
     // here I make sure that if there's someone's token in the cell, then the cell cannot be used anymore
     usedCells.forEach((usedCell) => {
       if (usedCell === cell) {
-        console.log("This cell was taken already...");
+        alert("Cell is taken. Use another one.");
       }
     });
 
@@ -176,6 +177,7 @@ const renderBoard = (function () {
 })();
 
 // Edit player names
+// Refactor this module. It can be definitely shorten!
 const renderPlayersNames = (function () {
   const playerObjects = displayController.players;
 
@@ -228,6 +230,7 @@ const restartGame = (function () {
   });
 })();
 
+// Highlight the player name when it is their turn
 const indicateTurn = (function () {
   const toggleTurnColor = (turn) => {
     if (turn.token === "X") {
@@ -242,4 +245,27 @@ const indicateTurn = (function () {
   toggleTurnColor(displayController.getActivePlayer());
 
   return { toggleTurnColor };
+})();
+
+// when there is a winner, then to display a popup message to congratulate
+const congratulateWinner = (function () {
+  const popupBlock = document.querySelector(".congratulate-block");
+  const congratulateText = document.querySelector(".congratulate-text");
+  const closeBtn = document.querySelector(".close-popup-btn");
+
+  const displayMessage = (name, combination) => {
+    popupBlock.style.display = "block";
+
+    if (name !== undefined || combination !== undefined) {
+      congratulateText.textContent = `GG! ${name} won with combination ${combination}!`;
+    } else {
+      congratulateText.textContent = `Tough round! It is a tie!`;
+    }
+  };
+
+  closeBtn.addEventListener("click", () => {
+    popupBlock.style.display = "none";
+  });
+
+  return { displayMessage };
 })();

@@ -25,6 +25,7 @@ html {
   display: grid;
   grid-template-rows: 70px 50px 70px 1fr;
   place-items: center;
+  position: relative;
 }
 
 h1 {
@@ -118,6 +119,43 @@ h1 {
 .cell:hover {
   cursor: pointer;
   background-color: rgb(92, 132, 148);
+}
+
+.congratulate-block {
+  display: none;
+
+  position: absolute;
+  top: 250px;
+  height: 200px;
+  width: 400px;
+  background-color: palevioletred;
+  border-radius: 20px;
+  padding: 30px 50px;
+}
+
+.congratulate-text {
+  font-size: 2rem;
+  font-weight: bold;
+  font-style: italic;
+  text-align: center;
+}
+
+.close-popup-btn {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+
+  background-color: green;
+  border-radius: 10px;
+  border: none;
+  padding: 5px 10px;
+  font-size: 1.1rem;
+  z-index: 3;
+}
+
+.close-popup-btn:hover {
+  color: white;
+  cursor: pointer;
 }
 
 #footer {
