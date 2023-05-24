@@ -36,13 +36,14 @@ h1 {
   color: white;
 }
 
-.restart-game {
+.restart-game-block {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 30px;
 }
 
-.restart-game > button {
+.restart-game-block > button {
   height: 40px;
   width: 150px;
   font-size: 1.5rem;
@@ -51,7 +52,7 @@ h1 {
   border-radius: 10px;
 }
 
-.restart-game > button:hover {
+.restart-game-block > button:hover {
   cursor: pointer;
   color: white;
   text-decoration: underline;
@@ -59,7 +60,7 @@ h1 {
 
 .player-names {
   display: grid;
-  grid-template-columns: 170px 20px 170px;
+  grid-template-columns: 170px 50px 20px 50px 170px;
   grid-template-rows: 50px;
 
   font-size: 2rem;
@@ -67,21 +68,22 @@ h1 {
   text-align: center;
 }
 
-.player-names > span:nth-child(2) {
+.player-names .score {
+  align-self: center;
   color: white;
 }
 
-.player-names > span:nth-child(odd) {
+.player-names > span[contenteditable="true"] {
   overflow: hidden;
   background-color: white;
   padding: 5px;
 }
 
-.player-names > span:hover {
+.player-names > span[contenteditable="true"]:hover {
   cursor: pointer;
 }
 
-.player-names > span:focus {
+.player-names > span[contenteditable="true"]:focus {
   outline: none;
   font-style: italic;
   border: palevioletred 3px solid;

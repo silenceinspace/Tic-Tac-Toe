@@ -20,13 +20,13 @@ const gameBoard = (function () {
 
 // what makes the game progress
 const displayController = (function () {
-  const createPlayer = (name, token, moves) => {
-    return { name, token, moves };
+  const createPlayer = (name, token, moves, score) => {
+    return { name, token, moves, score };
   };
 
   const players = [
-    createPlayer("Player One", "X", []),
-    createPlayer("Player Two", "O", []),
+    createPlayer("Player One", "X", [], 0),
+    createPlayer("Player Two", "O", [], 0),
   ];
 
   let activePlayer = players[0];
@@ -74,6 +74,8 @@ const displayController = (function () {
           getActivePlayer().name,
           result.sort()
         );
+        getActivePlayer().score += 1;
+        playerScore.updateScore();
         winner = true;
         return true;
       }
@@ -268,4 +270,33 @@ const congratulateWinner = (function () {
   });
 
   return { displayMessage };
+})();
+
+// display the game score and update it
+const playerScore = (function () {
+  const playerOne = displayController.players[0];
+  const playerTwo = displayController.players[1];
+
+  let playerOneScore = document.querySelector(".player-one-score");
+  let playerTwoScore = document.querySelector(".player-two-score");
+
+  playerOneScore.textContent = playerOne.score;
+  playerTwoScore.textContent = playerTwo.score;
+
+  const updateScore = () => {
+    playerOneScore.textContent = playerOne.score;
+    playerTwoScore.textContent = playerTwo.score;
+  };
+
+  const resetScoreBtn = document.querySelector(".reset-score");
+  resetScoreBtn.addEventListener("click", () => {
+    const answer = confirm("Would you really like to reset the game score?");
+    if (answer) {
+      playerOne.score = 0;
+      playerTwo.score = 0;
+      updateScore();
+    }
+  });
+
+  return { updateScore };
 })();
