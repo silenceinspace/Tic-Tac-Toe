@@ -178,52 +178,6 @@ const renderBoard = (function () {
   cells.forEach((cell) => cell.addEventListener("click", addMark));
 })();
 
-// Edit player names
-// Refactor this module. It can be definitely shorten!
-const renderPlayersNames = (function () {
-  const playerObjects = displayController.players;
-
-  const namePlayerOne = document.querySelector(".player-one");
-  namePlayerOne.textContent = playerObjects[0].name;
-
-  const namePlayerTwo = document.querySelector(".player-two");
-  namePlayerTwo.textContent = playerObjects[1].name;
-
-  namePlayerOne.addEventListener("blur", () => {
-    playerObjects[0].name = namePlayerOne.textContent;
-
-    const defaultName = "Player One";
-    if (namePlayerOne.textContent === "") {
-      alert("Default name was set");
-      playerObjects[0].name = defaultName;
-      namePlayerOne.textContent = defaultName;
-    }
-
-    if (namePlayerOne.textContent === namePlayerTwo.textContent) {
-      alert("You cannot have the same name");
-      playerObjects[0].name = defaultName;
-      namePlayerOne.textContent = defaultName;
-    }
-  });
-
-  namePlayerTwo.addEventListener("blur", () => {
-    playerObjects[1].name = namePlayerTwo.textContent;
-    const defaultName = "Player Two";
-
-    if (namePlayerTwo.textContent === "") {
-      alert("Default name was set");
-      playerObjects[1].name = defaultName;
-      namePlayerTwo.textContent = defaultName;
-    }
-
-    if (namePlayerOne.textContent === namePlayerTwo.textContent) {
-      alert("You cannot have the same name");
-      playerObjects[1].name = defaultName;
-      namePlayerTwo.textContent = defaultName;
-    }
-  });
-})();
-
 // Start a new game
 const restartGame = (function () {
   const restartBtn = document.querySelector(".restart-game");
@@ -300,3 +254,83 @@ const playerScore = (function () {
 
   return { updateScore };
 })();
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+// Edit player names
+const renderPlayersNames = (function () {
+  const playerObjects = displayController.players;
+
+  const namePlayerOne = document.querySelector(".player-one");
+  const namePlayerTwo = document.querySelector(".player-two");
+  namePlayerOne.textContent = playerObjects[0].name;
+  namePlayerTwo.textContent = playerObjects[1].name;
+
+  const updatePlayerNames = (playerNum, playerDiv, oppositeDiv) => {
+    const num = playerNum;
+    const div = playerDiv;
+    const divTwo = oppositeDiv;
+
+    playerObjects[num].name = div.textContent;
+    const defaultName = num === 0 ? "Player One" : "Player Two";
+    if (div.textContent === "" || div.textContent === "Computer") {
+      alert("Default name was set");
+      playerObjects[num].name = defaultName;
+      div.textContent = defaultName;
+    }
+
+    if (div.textContent === divTwo.textContent) {
+      alert("You cannot have the same name");
+      playerObjects[num].name = defaultName;
+      div.textContent = defaultName;
+    }
+  };
+
+  namePlayerOne.addEventListener("blur", () => {
+    updatePlayerNames(0, namePlayerOne, namePlayerTwo);
+  });
+
+  namePlayerTwo.addEventListener("blur", () => {
+    updatePlayerNames(1, namePlayerTwo, namePlayerOne);
+  });
+
+  const getPlayerTwo = () => namePlayerTwo;
+  return { getPlayerTwo };
+})();
+
+// create an AI to play against
+const playWithAi = (function () {
+  const btn = document.querySelector(".add-AI");
+  const replacePlayerWithAi = () => {
+    displayController.players[1].name = "Computer";
+    renderPlayersNames.getPlayerTwo().textContent = "Computer";
+    renderPlayersNames.getPlayerTwo().contentEditable = "false";
+
+    // allow a legal move for the computer
+    let randomNum = Math.floor(Math.random() * 9) + 1;
+    // displayController.makeMove(randomNum, displayController.players[1].token);
+  };
+
+  btn.addEventListener("click", replacePlayerWithAi);
+})();
+
+/*
+  Refacture:
+  
+  1. Create AI (an easy one + an impossible one)
+  2. Get rid of unnecessary console logs 
+  3. Organize functions inside of the modules and think about what I REALLY need to reveal
+  4. Go over all usages of my const vs let. Explain to myself why I chose one over the other
+  5. DRY - do not repeat yourself! 
+*/

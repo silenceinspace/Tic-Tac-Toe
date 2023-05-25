@@ -178,3 +178,12 @@ h1 {
   text-align: center;
   padding: 15px;
 }
+
+/* 
+  Refacture:
+
+  1. Responsiveness on the mobile screen
+  2. Place sections in the correct sequential order 
+  3. See where it is possible to connect to elements/class names/tags that will share the same properties
+  4. Change some colours and positions of the buttons and player fields 
+*/
