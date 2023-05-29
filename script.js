@@ -122,8 +122,12 @@ const displayController = (function () {
   // use displayController.makeMove() in the console to play a round
   let winner = false;
   let usedCells = [];
+
+  const getWinner = () => winner;
+  const getUsedCells = () => usedCells;
+
   const makeMove = function (cell, mark) {
-    if (winner) {
+    if (winner || usedCells.length === 9) {
       alert("Game is over. Start a new game.");
       return;
     }
@@ -150,6 +154,7 @@ const displayController = (function () {
           } else {
             switchPlayer();
             printMove();
+            return true;
           }
         }
       }
@@ -159,7 +164,14 @@ const displayController = (function () {
   // initial message
   printMove();
 
-  return { makeMove, getActivePlayer, startNewGame, players };
+  return {
+    makeMove,
+    getActivePlayer,
+    startNewGame,
+    players,
+    getUsedCells,
+    getWinner,
+  };
 })();
 
 // Work with DOM
@@ -171,7 +183,21 @@ const renderBoard = (function () {
       .closest("[data-index]")
       .getAttributeNode("data-index").value;
 
-    displayController.makeMove(cellIndex * 1, specificBtn);
+    let validMove = displayController.makeMove(cellIndex * 1, specificBtn);
+    if (validMove) {
+      if (
+        displayController.players[1].name === "Computer" &&
+        displayController.getWinner() !== true &&
+        displayController.getUsedCells().length !== 9
+      ) {
+        let moveAi = playWithAi.makeMoveAi();
+        cells.forEach((cell) => {
+          if (cell.getAttributeNode("data-index").value == moveAi) {
+            displayController.makeMove(moveAi, cell);
+          }
+        });
+      }
+    }
   };
 
   const cells = document.querySelectorAll(".cell");
@@ -255,19 +281,6 @@ const playerScore = (function () {
   return { updateScore };
 })();
 
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 // Edit player names
 const renderPlayersNames = (function () {
   const playerObjects = displayController.players;
@@ -316,13 +329,31 @@ const playWithAi = (function () {
     displayController.players[1].name = "Computer";
     renderPlayersNames.getPlayerTwo().textContent = "Computer";
     renderPlayersNames.getPlayerTwo().contentEditable = "false";
+  };
+  btn.addEventListener("click", replacePlayerWithAi);
 
-    // allow a legal move for the computer
-    let randomNum = Math.floor(Math.random() * 9) + 1;
-    // displayController.makeMove(randomNum, displayController.players[1].token);
+  // allow a legal move for the computer
+  const makeMoveAi = () => {
+    let randomNum;
+    let usedMoves = displayController.getUsedCells();
+
+    generateMove();
+    function generateMove() {
+      randomNum = Math.floor(Math.random() * 9) + 1;
+      usedMoves.forEach((move) => {
+        if (move != randomNum) {
+          return;
+        } else {
+          // implement recursion here! Keep using math.random() till there is a number that the usedMoves array does not contain
+          generateMove();
+        }
+      });
+    }
+
+    return randomNum;
   };
 
-  btn.addEventListener("click", replacePlayerWithAi);
+  return { makeMoveAi };
 })();
 
 /*
@@ -332,5 +363,6 @@ const playWithAi = (function () {
   2. Get rid of unnecessary console logs 
   3. Organize functions inside of the modules and think about what I REALLY need to reveal
   4. Go over all usages of my const vs let. Explain to myself why I chose one over the other
-  5. DRY - do not repeat yourself! 
+  5. DRY - do not repeat yourself!
+  6. Change some function/variable names?
 */
