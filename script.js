@@ -186,7 +186,7 @@ const renderBoard = (function () {
     let validMove = displayController.makeMove(cellIndex * 1, specificBtn);
     if (validMove) {
       if (
-        displayController.players[1].name === "Computer" &&
+        playWithAi.getStatusOfAi() &&
         displayController.getWinner() !== true &&
         displayController.getUsedCells().length !== 9
       ) {
@@ -325,12 +325,30 @@ const renderPlayersNames = (function () {
 // create an AI to play against
 const playWithAi = (function () {
   const btn = document.querySelector(".add-AI");
-  const replacePlayerWithAi = () => {
-    displayController.players[1].name = "Computer";
-    renderPlayersNames.getPlayerTwo().textContent = "Computer";
-    renderPlayersNames.getPlayerTwo().contentEditable = "false";
+  let aiIsActive = false;
+  const switchBetweenAiAndPlayer = () => {
+    if (displayController.getUsedCells().length !== 0) {
+      alert("You have already started the game.");
+      return;
+    }
+
+    if (!aiIsActive) {
+      displayController.players[1].name = "Computer";
+      renderPlayersNames.getPlayerTwo().textContent = "Computer";
+      renderPlayersNames.getPlayerTwo().contentEditable = "false";
+      btn.textContent = "play vs Player";
+      aiIsActive = true;
+    } else {
+      displayController.players[1].name = "Player Two";
+      renderPlayersNames.getPlayerTwo().textContent = "Player Two";
+      renderPlayersNames.getPlayerTwo().contentEditable = "true";
+      btn.textContent = "play vs AI";
+      aiIsActive = false;
+    }
   };
-  btn.addEventListener("click", replacePlayerWithAi);
+  btn.addEventListener("click", switchBetweenAiAndPlayer);
+
+  const getStatusOfAi = () => aiIsActive;
 
   // allow a legal move for the computer
   const makeMoveAi = () => {
@@ -353,13 +371,14 @@ const playWithAi = (function () {
     return randomNum;
   };
 
-  return { makeMoveAi };
+  return { makeMoveAi, getStatusOfAi };
 })();
 
 /*
   Refacture:
   
   1. Create AI (an easy one + an impossible one)
+ 
   2. Get rid of unnecessary console logs 
   3. Organize functions inside of the modules and think about what I REALLY need to reveal
   4. Go over all usages of my const vs let. Explain to myself why I chose one over the other
