@@ -14,28 +14,41 @@ html {
   font-family: "roboto", sans-serif;
 }
 
-.container {
-  height: 100vh;
+.container,
+.main-section,
+.player-info-block,
+.gameboard {
   display: grid;
+}
+
+.player-info-block,
+.popup-message,
+h1,
+#footer > p {
+  text-align: center;
+}
+
+.container {
   grid-template-rows: 1fr 50px;
   background-color: darkolivegreen;
+  height: 100vh;
 }
 
 .main-section {
-  display: grid;
   grid-template-rows: 70px 50px 70px 1fr;
   place-items: center;
   position: relative;
 }
 
+/* 1. Title section */
 h1 {
-  text-align: center;
   font-size: 3rem;
   font-weight: bold;
   font-style: italic;
   color: white;
 }
 
+/* 2. Buttons to control the flow of the game */
 .game-control-block {
   display: flex;
   align-items: center;
@@ -45,7 +58,7 @@ h1 {
 
 .game-control-block > button {
   height: 40px;
-  width: 150px;
+  width: 180px;
   font-size: 1.5rem;
   border: none;
   background-color: palevioletred;
@@ -58,14 +71,13 @@ h1 {
   text-decoration: underline;
 }
 
+/* 3. Section with the player names and their scores */
 .player-info-block {
-  display: grid;
   grid-template-columns: 170px 50px 20px 50px 170px;
   grid-template-rows: 50px;
 
   font-size: 2rem;
   font-weight: bold;
-  text-align: center;
 }
 
 .player-info-block .score {
@@ -89,16 +101,16 @@ h1 {
   border: palevioletred 3px solid;
 }
 
+/* 4. Gameboard where all action takes place */
 .gameboard {
-  border: 10px solid grey;
-  width: 310px;
-  height: 310px;
-  background-color: goldenrod;
-
-  display: grid;
   grid-template-columns: repeat(3, 90px);
   grid-template-rows: repeat(3, 90px);
   gap: 10px;
+
+  width: 310px;
+  height: 310px;
+  border: 10px solid grey;
+  background-color: goldenrod;
 }
 
 .gameboard > .cell {
@@ -114,7 +126,6 @@ h1 {
 
   font-size: 3rem;
   font-weight: bold;
-
   border: none;
 }
 
@@ -123,6 +134,7 @@ h1 {
   background-color: rgb(92, 132, 148);
 }
 
+/* 5. Hidden popup block to congratulate a winner */
 .congratulate-block {
   display: none;
 
@@ -130,16 +142,15 @@ h1 {
   top: 250px;
   height: 200px;
   width: 400px;
-  background-color: palevioletred;
-  border-radius: 20px;
   padding: 30px 50px;
+  border-radius: 20px;
+  background-color: palevioletred;
 }
 
 .popup-message {
   font-size: 2rem;
   font-weight: bold;
   font-style: italic;
-  text-align: center;
 }
 
 .close-popup {
@@ -160,6 +171,7 @@ h1 {
   cursor: pointer;
 }
 
+/* 6. Footer of the page */
 #footer {
   background-color: black;
 }
@@ -175,15 +187,58 @@ h1 {
 }
 
 #footer > p {
-  text-align: center;
   padding: 15px;
 }
 
-/* 
-  Refacture:
+/* 7. Responsiveness on the smaller screens */
+@media (max-width: 768px) {
+  h1 {
+    margin-top: 20px;
+  }
 
-  1. Responsiveness on the mobile screen
-  2. Place sections in the correct sequential order 
-  3. See where it is possible to connect to .player-info-block/tags that will share the same properties
-  4. Change some colours and positions of the buttons and player fields 
-*/
+  .container {
+    height: auto;
+  }
+
+  .main-section {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    margin-bottom: 30px;
+  }
+
+  .game-control-block {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .player-info-block {
+    grid-template-columns: 75px 100px 75px;
+    grid-template-rows: 50px 70px 50px;
+    margin: auto;
+  }
+
+  .player-one-name {
+    grid-column: 1/4;
+    grid-row: 1/2;
+  }
+
+  .player-two-name {
+    grid-column: 1/4;
+    grid-row: 3/4;
+  }
+
+  .score {
+    grid-column: 2/3;
+  }
+
+  .player-one-score {
+    grid-column: 1/2;
+    grid-row: 2/3;
+  }
+
+  .player-two-score {
+    grid-column: 3/4;
+    grid-row: 2/3;
+  }
+}
