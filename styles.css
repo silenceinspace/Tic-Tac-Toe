@@ -36,14 +36,14 @@ h1 {
   color: white;
 }
 
-.restart-game-block {
+.game-control-block {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 30px;
 }
 
-.restart-game-block > button {
+.game-control-block > button {
   height: 40px;
   width: 150px;
   font-size: 1.5rem;
@@ -52,13 +52,13 @@ h1 {
   border-radius: 10px;
 }
 
-.restart-game-block > button:hover {
+.game-control-block > button:hover {
   cursor: pointer;
   color: white;
   text-decoration: underline;
 }
 
-.player-names {
+.player-info-block {
   display: grid;
   grid-template-columns: 170px 50px 20px 50px 170px;
   grid-template-rows: 50px;
@@ -68,22 +68,22 @@ h1 {
   text-align: center;
 }
 
-.player-names .score {
+.player-info-block .score {
   align-self: center;
   color: white;
 }
 
-.player-names > span[contenteditable="true"] {
+.player-info-block > span[contenteditable="true"] {
   overflow: hidden;
   background-color: white;
   padding: 5px;
 }
 
-.player-names > span[contenteditable="true"]:hover {
+.player-info-block > span[contenteditable="true"]:hover {
   cursor: pointer;
 }
 
-.player-names > span[contenteditable="true"]:focus {
+.player-info-block > span[contenteditable="true"]:focus {
   outline: none;
   font-style: italic;
   border: palevioletred 3px solid;
@@ -135,14 +135,14 @@ h1 {
   padding: 30px 50px;
 }
 
-.congratulate-text {
+.popup-message {
   font-size: 2rem;
   font-weight: bold;
   font-style: italic;
   text-align: center;
 }
 
-.close-popup-btn {
+.close-popup {
   position: absolute;
   bottom: 20px;
   right: 20px;
@@ -155,7 +155,7 @@ h1 {
   z-index: 3;
 }
 
-.close-popup-btn:hover {
+.close-popup:hover {
   color: white;
   cursor: pointer;
 }
@@ -184,6 +184,6 @@ h1 {
 
   1. Responsiveness on the mobile screen
   2. Place sections in the correct sequential order 
-  3. See where it is possible to connect to elements/class names/tags that will share the same properties
+  3. See where it is possible to connect to .player-info-block/tags that will share the same properties
   4. Change some colours and positions of the buttons and player fields 
 */

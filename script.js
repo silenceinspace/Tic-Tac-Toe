@@ -216,11 +216,15 @@ const restartGame = (function () {
 const indicateTurn = (function () {
   const toggleTurnColor = (turn) => {
     if (turn.token === "X") {
-      document.querySelector(".player-one").style.backgroundColor = "orange";
-      document.querySelector(".player-two").style.backgroundColor = "white";
+      document.querySelector(".player-one-name").style.backgroundColor =
+        "orange";
+      document.querySelector(".player-two-name").style.backgroundColor =
+        "white";
     } else {
-      document.querySelector(".player-two").style.backgroundColor = "orange";
-      document.querySelector(".player-one").style.backgroundColor = "white";
+      document.querySelector(".player-two-name").style.backgroundColor =
+        "orange";
+      document.querySelector(".player-one-name").style.backgroundColor =
+        "white";
     }
   };
 
@@ -232,8 +236,8 @@ const indicateTurn = (function () {
 // when there is a winner, then to display a popup message to congratulate
 const congratulateWinner = (function () {
   const popupBlock = document.querySelector(".congratulate-block");
-  const congratulateText = document.querySelector(".congratulate-text");
-  const closeBtn = document.querySelector(".close-popup-btn");
+  const congratulateText = document.querySelector(".popup-message");
+  const closeBtn = document.querySelector(".close-popup");
 
   const displayMessage = (name, combination) => {
     popupBlock.style.display = "block";
@@ -285,8 +289,8 @@ const playerScore = (function () {
 const renderPlayersNames = (function () {
   const playerObjects = displayController.players;
 
-  const namePlayerOne = document.querySelector(".player-one");
-  const namePlayerTwo = document.querySelector(".player-two");
+  const namePlayerOne = document.querySelector(".player-one-name");
+  const namePlayerTwo = document.querySelector(".player-two-name");
   namePlayerOne.textContent = playerObjects[0].name;
   namePlayerTwo.textContent = playerObjects[1].name;
 
@@ -324,7 +328,7 @@ const renderPlayersNames = (function () {
 
 // create an AI to play against
 const playWithAi = (function () {
-  const btn = document.querySelector(".add-AI");
+  const btn = document.querySelector(".play-against-ai");
   let aiIsActive = false;
   const switchBetweenAiAndPlayer = () => {
     if (displayController.getUsedCells().length !== 0) {
