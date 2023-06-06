@@ -1,4 +1,4 @@
-// gameBoard creates a visual reprensentation of the gameboard in the console
+// 1. Creates an initial reprensentation of the gameboard in the console
 const gameBoard = (function () {
   const gameBoard = [];
   const rows = 3;
@@ -18,26 +18,23 @@ const gameBoard = (function () {
   return { getBoard };
 })();
 
-// what makes the game progress
+// 2. Game control section in the console
 const displayController = (function () {
+  // factory function to create two players with identical parameters
   const createPlayer = (name, token, moves, score) => {
     return { name, token, moves, score };
   };
 
-  const players = [
+  let players = [
     createPlayer("Player One", "X", [], 0),
     createPlayer("Player Two", "O", [], 0),
   ];
 
+  // const copyPlayerObject = JSON.parse(JSON.stringify(players));
   let activePlayer = players[0];
   let board = gameBoard.getBoard();
 
-  const printMove = function () {
-    console.log(`It is ${activePlayer.name}'s turn`);
-    console.log(board);
-  };
-
-  const switchPlayer = function () {
+  const _switchPlayer = function () {
     activePlayer = activePlayer === players[0] ? players[1] : players[0];
     indicateTurn.toggleTurnColor(getActivePlayer());
   };
@@ -60,6 +57,7 @@ const displayController = (function () {
     const madeMoves = getActivePlayer().moves;
 
     for (let i = 0; i < winningCombinations.length; i++) {
+      // push into the array to check if there are three numbers, meaning there is a winning combination
       const result = [];
       for (let j = 0; j < 3; j++) {
         for (let k = 0; k < madeMoves.length; k++) {
@@ -92,7 +90,7 @@ const displayController = (function () {
 
   // clear all data for a new game
   const startNewGame = () => {
-    let playerResponse = confirm("Would you like to start a new game?");
+    const playerResponse = confirm("Would you like to start a new game?");
 
     function resetBoard() {
       board = [
@@ -115,45 +113,44 @@ const displayController = (function () {
       const cells = document.querySelectorAll(".cell");
       cells.forEach((cell) => (cell.textContent = ""));
       indicateTurn.toggleTurnColor(activePlayer);
-      printMove();
     }
   };
 
-  // use displayController.makeMove() in the console to play a round
+  // Make a move and keep track of already made moves
   let winner = false;
   let usedCells = [];
 
   const getWinner = () => winner;
   const getUsedCells = () => usedCells;
 
-  const makeMove = function (cell, mark) {
+  const makeMove = function (cellNumber, playerMark) {
     if (winner || usedCells.length === 9) {
       alert("Game is over. Start a new game.");
       return;
     }
 
-    // here I make sure that if there's someone's token in the cell, then the cell cannot be used anymore
+    // Make sure that if there's someone's token in the cell, then the cell cannot be used anymore. But it does not stop the function's run here
     usedCells.forEach((usedCell) => {
-      if (usedCell === cell) {
+      if (usedCell === cellNumber) {
         alert("Cell is taken. Use another one.");
       }
     });
 
     for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 3; j++) {
-        if (cell === board[i][j]) {
-          usedCells.push(cell);
-          getActivePlayer().moves.push(cell);
+        if (cellNumber === board[i][j]) {
+          usedCells.push(cellNumber);
+          getActivePlayer().moves.push(cellNumber);
           board[i][j] = getActivePlayer().token;
-          mark.textContent = getActivePlayer().token;
+          playerMark.textContent = getActivePlayer().token;
 
           if (checkForWin()) {
             return;
           } else if (registerTie()) {
             return;
           } else {
-            switchPlayer();
-            printMove();
+            _switchPlayer();
+            // return true so that the computer can make its move (to prevent the player making a move on an occupied cell, nothing will happen until they use a free spot)
             return true;
           }
         }
@@ -161,38 +158,38 @@ const displayController = (function () {
     }
   };
 
-  // initial message
-  printMove();
-
   return {
     makeMove,
+    getUsedCells,
     getActivePlayer,
     startNewGame,
-    players,
-    getUsedCells,
     getWinner,
+    players,
+    // copyPlayerObject,
   };
 })();
 
-// Work with DOM
+// 3. Work with DOM
+// Visually note moves
 const renderBoard = (function () {
-  const addMark = (e) => {
-    // a value inside a data attribute is of string type
-    const specificBtn = e.target;
-    const cellIndex = specificBtn
+  const _addMark = (e) => {
+    // a value inside a data attribute is of the string type, so "cellIndex * 1" to convert it to a number
+    const specificCell = e.target;
+    const cellIndex = specificCell
       .closest("[data-index]")
       .getAttributeNode("data-index").value;
 
-    let validMove = displayController.makeMove(cellIndex * 1, specificBtn);
+    const validMove = displayController.makeMove(cellIndex * 1, specificCell);
+    // if validMove returned true, it means the player made a move on an availabe cell
     if (validMove) {
       if (
         playWithAi.getStatusOfAi() &&
         displayController.getWinner() !== true &&
         displayController.getUsedCells().length !== 9
       ) {
-        let moveAi = playWithAi.makeMoveAi();
+        const moveAi = playWithAi.makeMoveAi();
         cells.forEach((cell) => {
-          if (cell.getAttributeNode("data-index").value == moveAi) {
+          if (cell.getAttributeNode("data-index").value * 1 === moveAi) {
             displayController.makeMove(moveAi, cell);
           }
         });
@@ -201,15 +198,131 @@ const renderBoard = (function () {
   };
 
   const cells = document.querySelectorAll(".cell");
-  cells.forEach((cell) => cell.addEventListener("click", addMark));
+  cells.forEach((cell) => cell.addEventListener("click", _addMark));
 })();
 
-// Start a new game
-const restartGame = (function () {
-  const restartBtn = document.querySelector(".restart-game");
-  restartBtn.addEventListener("click", () => {
-    displayController.startNewGame();
+// Create an AI to play against (no minimax algorithm... so the computer just makes any random legal move)
+const playWithAi = (function () {
+  const activateAiBtn = document.querySelector(".play-against-ai");
+  let aiIsActive = false;
+  const getStatusOfAi = () => aiIsActive;
+
+  const _switchBetweenAiAndPlayer = () => {
+    if (displayController.getUsedCells().length !== 0) {
+      alert("You have already started the game.");
+      return;
+    }
+
+    if (!aiIsActive) {
+      displayController.players[1].name = "Computer";
+      renderPlayersNames.getPlayerTwo().textContent = "Computer";
+      renderPlayersNames.getPlayerTwo().contentEditable = "false";
+      activateAiBtn.textContent = "play vs Player";
+      aiIsActive = true;
+    } else {
+      displayController.players[1].name = "Player Two";
+      renderPlayersNames.getPlayerTwo().textContent = "Player Two";
+      renderPlayersNames.getPlayerTwo().contentEditable = "true";
+      activateAiBtn.textContent = "play vs AI";
+      aiIsActive = false;
+    }
+  };
+  activateAiBtn.addEventListener("click", _switchBetweenAiAndPlayer);
+
+  // allow a legal move for the computer
+  const makeMoveAi = () => {
+    let randomMove;
+    const usedMoves = displayController.getUsedCells();
+
+    generateMove();
+    function generateMove() {
+      randomMove = Math.floor(Math.random() * 9) + 1;
+      usedMoves.forEach((move) => {
+        if (move != randomMove) {
+          return;
+        } else {
+          // implement recursion here! Keep using math.random() till there is a number that the usedMoves array does not contain
+          generateMove();
+        }
+      });
+    }
+
+    return randomMove;
+  };
+
+  return { makeMoveAi, getStatusOfAi };
+})();
+
+// Change player names
+const renderPlayersNames = (function () {
+  const playerObjects = displayController.players;
+
+  const namePlayerOne = document.querySelector(".player-one-name");
+  const namePlayerTwo = document.querySelector(".player-two-name");
+  namePlayerOne.textContent = playerObjects[0].name;
+  namePlayerTwo.textContent = playerObjects[1].name;
+
+  const _updatePlayerNames = (playerNum, playerDiv, oppositeDiv) => {
+    const num = playerNum;
+    const theirDiv = playerDiv;
+    const opponentsDiv = oppositeDiv;
+
+    playerObjects[num].name = theirDiv.textContent;
+    const defaultName = num === 0 ? "Player One" : "Player Two";
+    if (theirDiv.textContent === "" || theirDiv.textContent === "Computer") {
+      alert("Default name was set");
+      playerObjects[num].name = defaultName;
+      theirDiv.textContent = defaultName;
+    }
+
+    if (theirDiv.textContent === opponentsDiv.textContent) {
+      alert("You cannot have the same name");
+      playerObjects[num].name = defaultName;
+      theirDiv.textContent = defaultName;
+    }
+  };
+
+  namePlayerOne.addEventListener("blur", () => {
+    _updatePlayerNames(0, namePlayerOne, namePlayerTwo);
   });
+
+  namePlayerTwo.addEventListener("blur", () => {
+    _updatePlayerNames(1, namePlayerTwo, namePlayerOne);
+  });
+
+  const getPlayerTwo = () => namePlayerTwo;
+  return { getPlayerTwo };
+})();
+
+// Display the game score and update it
+const playerScore = (function () {
+  const playerOne = displayController.players[0];
+  const playerTwo = displayController.players[1];
+
+  const playerOneScore = document.querySelector(".player-one-score");
+  const playerTwoScore = document.querySelector(".player-two-score");
+
+  playerOneScore.textContent = playerOne.score;
+  playerTwoScore.textContent = playerTwo.score;
+
+  const updateScore = () => {
+    playerOneScore.textContent = playerOne.score;
+    playerTwoScore.textContent = playerTwo.score;
+  };
+
+  const resetScoreBtn = document.querySelector(".reset-score");
+  resetScoreBtn.addEventListener("click", () => {
+    const confirmScoreReset = confirm(
+      "Would you really like to reset the game score?"
+    );
+    if (confirmScoreReset) {
+      playerOne.score = 0;
+      playerTwo.score = 0;
+      updateScore();
+    }
+  });
+
+  return { updateScore };
 })();
 
 // Highlight the player name when it is their turn
@@ -233,159 +346,35 @@ const indicateTurn = (function () {
   return { toggleTurnColor };
 })();
 
-// when there is a winner, then to display a popup message to congratulate
+// Start a new game
+const restartGame = (function () {
+  const restartBtn = document.querySelector(".restart-game");
+  restartBtn.addEventListener("click", () => {
+    displayController.startNewGame();
+  });
+})();
+
+// When there is a winner, then display a popup message to congratulate
 const congratulateWinner = (function () {
   const popupBlock = document.querySelector(".congratulate-block");
-  const congratulateText = document.querySelector(".popup-message");
-  const closeBtn = document.querySelector(".close-popup");
+  const popupMessage = document.querySelector(".popup-message");
+  const closePopBtn = document.querySelector(".close-popup");
 
   const displayMessage = (name, combination) => {
     popupBlock.style.display = "block";
 
+    // if two arguments are passed in, then give me more details about the win (name + combination of the winner)
     if (name !== undefined || combination !== undefined) {
-      congratulateText.textContent = `GG! ${name} won with combination ${combination}!`;
+      popupMessage.textContent = `GG! ${name} won with combination ${combination}!`;
     } else {
-      congratulateText.textContent = `Tough round! It is a tie!`;
+      popupMessage.textContent = `Tough round! It is a tie!`;
     }
   };
 
-  closeBtn.addEventListener("click", () => {
+  closePopBtn.addEventListener("click", () => {
     popupBlock.style.display = "none";
   });
 
   return { displayMessage };
 })();
 
-// display the game score and update it
-const playerScore = (function () {
-  const playerOne = displayController.players[0];
-  const playerTwo = displayController.players[1];
-
-  let playerOneScore = document.querySelector(".player-one-score");
-  let playerTwoScore = document.querySelector(".player-two-score");
-
-  playerOneScore.textContent = playerOne.score;
-  playerTwoScore.textContent = playerTwo.score;
-
-  const updateScore = () => {
-    playerOneScore.textContent = playerOne.score;
-    playerTwoScore.textContent = playerTwo.score;
-  };
-
-  const resetScoreBtn = document.querySelector(".reset-score");
-  resetScoreBtn.addEventListener("click", () => {
-    const answer = confirm("Would you really like to reset the game score?");
-    if (answer) {
-      playerOne.score = 0;
-      playerTwo.score = 0;
-      updateScore();
-    }
-  });
-
-  return { updateScore };
-})();
-
-// Edit player names
-const renderPlayersNames = (function () {
-  const playerObjects = displayController.players;
-
-  const namePlayerOne = document.querySelector(".player-one-name");
-  const namePlayerTwo = document.querySelector(".player-two-name");
-  namePlayerOne.textContent = playerObjects[0].name;
-  namePlayerTwo.textContent = playerObjects[1].name;
-
-  const updatePlayerNames = (playerNum, playerDiv, oppositeDiv) => {
-    const num = playerNum;
-    const div = playerDiv;
-    const divTwo = oppositeDiv;
-
-    playerObjects[num].name = div.textContent;
-    const defaultName = num === 0 ? "Player One" : "Player Two";
-    if (div.textContent === "" || div.textContent === "Computer") {
-      alert("Default name was set");
-      playerObjects[num].name = defaultName;
-      div.textContent = defaultName;
-    }
-
-    if (div.textContent === divTwo.textContent) {
-      alert("You cannot have the same name");
-      playerObjects[num].name = defaultName;
-      div.textContent = defaultName;
-    }
-  };
-
-  namePlayerOne.addEventListener("blur", () => {
-    updatePlayerNames(0, namePlayerOne, namePlayerTwo);
-  });
-
-  namePlayerTwo.addEventListener("blur", () => {
-    updatePlayerNames(1, namePlayerTwo, namePlayerOne);
-  });
-
-  const getPlayerTwo = () => namePlayerTwo;
-  return { getPlayerTwo };
-})();
-
-// create an AI to play against
-const playWithAi = (function () {
-  const btn = document.querySelector(".play-against-ai");
-  let aiIsActive = false;
-  const switchBetweenAiAndPlayer = () => {
-    if (displayController.getUsedCells().length !== 0) {
-      alert("You have already started the game.");
-      return;
-    }
-
-    if (!aiIsActive) {
-      displayController.players[1].name = "Computer";
-      renderPlayersNames.getPlayerTwo().textContent = "Computer";
-      renderPlayersNames.getPlayerTwo().contentEditable = "false";
-      btn.textContent = "play vs Player";
-      aiIsActive = true;
-    } else {
-      displayController.players[1].name = "Player Two";
-      renderPlayersNames.getPlayerTwo().textContent = "Player Two";
-      renderPlayersNames.getPlayerTwo().contentEditable = "true";
-      btn.textContent = "play vs AI";
-      aiIsActive = false;
-    }
-  };
-  btn.addEventListener("click", switchBetweenAiAndPlayer);
-
-  const getStatusOfAi = () => aiIsActive;
-
-  // allow a legal move for the computer
-  const makeMoveAi = () => {
-    let randomNum;
-    let usedMoves = displayController.getUsedCells();
-
-    generateMove();
-    function generateMove() {
-      randomNum = Math.floor(Math.random() * 9) + 1;
-      usedMoves.forEach((move) => {
-        if (move != randomNum) {
-          return;
-        } else {
-          // implement recursion here! Keep using math.random() till there is a number that the usedMoves array does not contain
-          generateMove();
-        }
-      });
-    }
-
-    return randomNum;
-  };
-
-  return { makeMoveAi, getStatusOfAi };
-})();
-
-/*
-  Refacture:
-  
-  1. Create AI (an easy one + an impossible one)
- 
-  2. Get rid of unnecessary console logs 
-  3. Organize functions inside of the modules and think about what I REALLY need to reveal
-  4. Go over all usages of my const vs let. Explain to myself why I chose one over the other
-  5. DRY - do not repeat yourself!
-  6. Change some function/variable names?
-*/
