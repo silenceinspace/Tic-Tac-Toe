@@ -10,6 +10,8 @@
     "ecmaVersion": "latest"
   },
   "rules": {
-    "no-unused-vars": "off"
+    "capitalized-comments": "error"
+    // "no-use-before-define": "error",
+    // "no-unused-vars": "off"
   }
 }

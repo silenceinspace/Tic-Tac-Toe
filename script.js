@@ -22,7 +22,7 @@
 
   // 2. Game control section in the console
   const displayController = (function () {
-    // factory function to create two players with identical parameters
+    // Factory function to create two players with identical parameters
     const _createPlayer = (name, token, moves, score) => {
       return { name, token, moves, score };
     };
@@ -32,8 +32,8 @@
       _createPlayer("Player Two", "O", [], 0),
     ];
 
-    // const copyPlayerObject = JSON.parse(JSON.stringify(players));
     let activePlayer = players[0];
+    const getActivePlayer = () => activePlayer;
     let board = gameBoard.getBoard();
 
     const _switchPlayer = function () {
@@ -41,25 +41,23 @@
       indicateTurn.toggleTurnColor(getActivePlayer());
     };
 
-    const getActivePlayer = () => activePlayer;
+    // Hardcore the winning combinations
+    const winningCombinations = [
+      [1, 2, 3],
+      [4, 5, 6],
+      [7, 8, 9],
+      [1, 4, 7],
+      [2, 5, 8],
+      [3, 6, 9],
+      [1, 5, 9],
+      [3, 5, 7],
+    ];
 
-    // hardcore the winning combinations
     const _checkForWin = () => {
-      const winningCombinations = [
-        [1, 2, 3],
-        [4, 5, 6],
-        [7, 8, 9],
-        [1, 4, 7],
-        [2, 5, 8],
-        [3, 6, 9],
-        [1, 5, 9],
-        [3, 5, 7],
-      ];
-
       const madeMoves = getActivePlayer().moves;
 
       for (let i = 0; i < winningCombinations.length; i++) {
-        // push into the array to check if there are three numbers, meaning there is a winning combination
+        // Push into the array to check if there are three numbers, meaning there is a winning combination
         const result = [];
         for (let j = 0; j < 3; j++) {
           for (let k = 0; k < madeMoves.length; k++) {
@@ -82,7 +80,7 @@
       }
     };
 
-    // if all cells are occupied but there is no winner, then it is a tie
+    // If all cells are occupied but there is no winner, then it is a tie
     const _registerTie = () => {
       if (usedCells.length === 9 && winner !== true) {
         congratulateWinner.displayMessage();
@@ -90,7 +88,7 @@
       }
     };
 
-    // clear all data for a new game
+    // Clear all data for a new game
     const startNewGame = () => {
       const playerResponse = confirm("Would you like to start a new game?");
 
@@ -104,14 +102,14 @@
       }
 
       if (playerResponse) {
-        // invisible changes
+        // Invisible changes
         winner = false;
         players[0].moves = [];
         players[1].moves = [];
         usedCells = [];
         activePlayer = players[0];
         board = resetBoard();
-        // visible changes
+        // Visible changes
         const cells = document.querySelectorAll(".cell");
         cells.forEach((cell) => (cell.textContent = ""));
         indicateTurn.toggleTurnColor(activePlayer);
@@ -152,13 +150,41 @@
               return;
             } else {
               _switchPlayer();
-              // return true so that the computer can make its move (to prevent the player making a move on an occupied cell, nothing will happen until they use a free spot)
+              // Return true so that the computer can make its move (to prevent the player making a move on an occupied cell, nothing will happen until they use a free spot)
               return true;
             }
           }
         }
       }
     };
+
+    const _addMark = (e) => {
+      // A value inside a data attribute is of the string type, so "cellIndex * 1" to convert it to a number
+      const specificCell = e.target;
+      const cellIndex = specificCell
+        .closest("[data-index]")
+        .getAttributeNode("data-index").value;
+
+      const validMove = makeMove(cellIndex * 1, specificCell);
+      // If validMove returned true, it means the player made a move on an availabe cell
+      if (validMove) {
+        if (
+          playWithAi.getStatusOfAi() &&
+          getWinner() !== true &&
+          getUsedCells().length !== 9
+        ) {
+          const moveAi = playWithAi.makeMoveAi();
+          cells.forEach((cell) => {
+            if (cell.getAttributeNode("data-index").value * 1 === moveAi) {
+              makeMove(moveAi, cell);
+            }
+          });
+        }
+      }
+    };
+
+    const cells = document.querySelectorAll(".cell");
+    cells.forEach((cell) => cell.addEventListener("click", _addMark));
 
     return {
       makeMove,
@@ -171,37 +197,6 @@
   })();
 
   // 3. Work with DOM
-  // Visually note moves
-  const renderBoard = (function () {
-    const _addMark = (e) => {
-      // a value inside a data attribute is of the string type, so "cellIndex * 1" to convert it to a number
-      const specificCell = e.target;
-      const cellIndex = specificCell
-        .closest("[data-index]")
-        .getAttributeNode("data-index").value;
-
-      const validMove = displayController.makeMove(cellIndex * 1, specificCell);
-      // if validMove returned true, it means the player made a move on an availabe cell
-      if (validMove) {
-        if (
-          playWithAi.getStatusOfAi() &&
-          displayController.getWinner() !== true &&
-          displayController.getUsedCells().length !== 9
-        ) {
-          const moveAi = playWithAi.makeMoveAi();
-          cells.forEach((cell) => {
-            if (cell.getAttributeNode("data-index").value * 1 === moveAi) {
-              displayController.makeMove(moveAi, cell);
-            }
-          });
-        }
-      }
-    };
-
-    const cells = document.querySelectorAll(".cell");
-    cells.forEach((cell) => cell.addEventListener("click", _addMark));
-  })();
-
   // Create an AI to play against (no minimax algorithm... so the computer just makes any random legal move)
   const playWithAi = (function () {
     const activateAiBtn = document.querySelector(".play-against-ai");
@@ -230,7 +225,7 @@
     };
     activateAiBtn.addEventListener("click", _switchBetweenAiAndPlayer);
 
-    // allow a legal move for the computer
+    // Allow a legal move for the computer
     const makeMoveAi = () => {
       let randomMove;
       const usedMoves = displayController.getUsedCells();
@@ -242,7 +237,7 @@
           if (move != randomMove) {
             return;
           } else {
-            // implement recursion here! Keep using math.random() till there is a number that the usedMoves array does not contain
+            // Implement recursion here! Keep using math.random() till there is a number that the usedMoves array does not contain
             generateMove();
           }
         });
@@ -323,6 +318,11 @@
       }
     });
 
+    const restartBtn = document.querySelector(".restart-game");
+    restartBtn.addEventListener("click", () => {
+      displayController.startNewGame();
+    });
+
     return { updateScore };
   })();
 
@@ -347,14 +347,6 @@
     return { toggleTurnColor };
   })();
 
-  // Start a new game
-  const restartGame = (function () {
-    const restartBtn = document.querySelector(".restart-game");
-    restartBtn.addEventListener("click", () => {
-      displayController.startNewGame();
-    });
-  })();
-
   // When there is a winner, then display a popup message to congratulate
   const congratulateWinner = (function () {
     const popupBlock = document.querySelector(".congratulate-block");
@@ -364,7 +356,7 @@
     const displayMessage = (name, combination) => {
       popupBlock.style.display = "block";
 
-      // if two arguments are passed in, then give me more details about the win (name + combination of the winner)
+      // If two arguments are passed in, then give me more details about the win (name + combination of the winner)
       if (name !== undefined || combination !== undefined) {
         popupMessage.textContent = `GG! ${name} won with combination ${combination}!`;
       } else {
@@ -379,3 +371,5 @@
     return { displayMessage };
   })();
 })();
+
+// My name is anton
