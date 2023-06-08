@@ -141,7 +141,7 @@ h1 {
   position: absolute;
   top: 250px;
   height: 200px;
-  width: 400px;
+  width: 350px;
   padding: 30px 50px;
   border-radius: 20px;
   background-color: palevioletred;
@@ -240,5 +240,9 @@ h1 {
   .player-two-score {
     grid-column: 3/4;
     grid-row: 2/3;
+  }
+
+  .congratulate-block {
+    top: 550px;
   }
 }
