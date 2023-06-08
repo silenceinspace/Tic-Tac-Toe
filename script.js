@@ -1,4 +1,4 @@
-// Wrap my IIFEs inside of one global IIEF, so that the user cannot manipulate with data in the console 
+// Wrap my IIFEs inside of one global IIEF, so that the user cannot manipulate with data in the console
 (function () {
   // 1. Creates an initial reprensentation of the gameboard in the console
   const gameBoard = (function () {
